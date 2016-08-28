@@ -1,0 +1,57 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+
+<dom-module id="horizon-collection">
+  <script>
+
+    var instances = [];
+    
+    Polymer({
+      is: 'horizon-collection',
+      
+      properties: {
+        name: {
+          type: String
+        },
+        data: {
+          type: Array,
+          value: [],
+          notify: true
+        },
+      },
+      
+      ready: function() {
+        var that = this
+        
+        horizon(this.name).watch().subscribe(function(messages){
+          that.set("data", messages);
+        });
+        
+      },
+      
+      insert: function(data) {
+        horizon(this.name).store(data).subscribe();
+      },
+      
+      remove: function(id) {
+        horizon(this.name).remove(id);
+      },
+      
+      update: function(data) {
+        horizon(this.name).update(data);
+      },
+      
+      removeAll: function() {
+        var that = this
+        horizon(this.name).fetch()
+        .mergeMap(function(messageList){ horizon(that.name).removeAll(messageList)})
+        .subscribe({
+            next: function(id)   { console.log(`id ${id} was removed`) },
+            error: function(err) { console.error(`Error: ${err}`) },
+            complete: function() { console.log('All items removed successfully') }
+        });
+      }
+      
+
+    });
+  </script>
+</dom-module>
