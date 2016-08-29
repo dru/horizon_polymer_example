@@ -22,10 +22,29 @@
       ready: function() {
         var that = this
         
-        horizon(this.name).watch().subscribe(function(messages){
-          that.set("data", messages);
+        horizon(this.name).watch({rawChanges: true}).subscribe({
+            next: function(change) { 
+                switch(change.type) {
+                case "initial":
+                case "add":
+                    that.push('data', change.new_val)
+                    break;
+                case "remove":
+                    var index = that.data.findIndex(function(a){ return a.id == change.old_val.id});
+                    if (index != -1) {
+                        that.splice('data', index, 1);
+                    }
+                    break;
+                case "change":
+                    var index = that.data.findIndex(function(a){ return a.id == change.old_val.id});
+                    if (index != -1) {
+                        that.set(`data.${index}`, change.new_val)
+                    }
+                }
+            },
+            error: function(err) { console.error(`Error: ${err}`) }
         });
-        
+
       },
       
       insert: function(data) {

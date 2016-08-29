@@ -145,7 +145,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       detached: function() {
-        this.playAnimation('exit');
         this.removeEventListener('focus', this._activate.bind(this), true);
         this.removeEventListener('blur', this._deactivate.bind(this), true);
         this.removeEventListener('mouseenter', this._activate.bind(this));
@@ -178,7 +177,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
       _onCheck: function(){
-        console.log("sda sd")
         this.fire('update-todo', {todo: this.todo});        
       },
       _onDelete: function() {
