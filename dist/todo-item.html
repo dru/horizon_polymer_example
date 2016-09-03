@@ -104,6 +104,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer.NeonSharedElementAnimatableBehavior,
         Polymer.NeonAnimationRunnerBehavior
       ],
+      
+      listeners: {
+        'neon-animation-finish': '_onNeonAnimationFinish'
+      },
 
       properties: {
 
@@ -121,23 +125,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             return {
               'entry': {
                 name: 'fade-in-animation',
-                node: this,
-                
+                node: this
               },
               'exit': {
-                name: 'slide-right-animation',
+                name: 'fade-out-animation',
                 node: this
               }
             }
           }
         }
       },
-
+      
+      _onNeonAnimationFinish: function(cookie){
+        if(cookie.detail == 'exit'){
+          this.style.display = "none";
+          this.fire('delete-todo', {todo: this.todo});
+        }
+      },
+      
       attached: function() {
         // Delegate focus events with useCapture to figure out if one of our
         // child elements is being focused or if we're about to blur
         // All of this fanciness is for the sake of the raised paper effect
-        this.playAnimation('entry');
+        this.playAnimation('entry', 'entry');
         this.addEventListener('focus', this._activate.bind(this), true);
         this.addEventListener('blur', this._deactivate.bind(this), true);
         this.addEventListener('mouseenter', this._activate.bind(this));
@@ -180,7 +190,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.fire('update-todo', {todo: this.todo});        
       },
       _onDelete: function() {
-        this.fire('delete-todo', {todo: this.todo});
+        this.playAnimation('exit', 'exit', false);
       }
 
     });
