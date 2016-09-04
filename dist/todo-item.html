@@ -17,6 +17,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="/bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="/bower_components/neon-animation/neon-animation.html">
 
+<link rel="import" href="todo-animations.html">
+
 
 <dom-module id="todo-item">
 
@@ -26,7 +28,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         display: block;
         box-sizing: border-box;
-        min-height: 50px;
+        overflow: hidden;
       }
 
       .row {
@@ -67,8 +69,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         opacity: 1;
       }
     </style>
-
-    <paper-material elevation="[[_computeElevation(active)]]"
+    
+    <!-- elevation="[[_computeElevation(active)]]" -->
+    <paper-material 
                     class="row layout horizontal center">
 
       <!-- Note the use of $= for aria-labelledby. This is because there's
@@ -124,11 +127,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: function() {
             return {
               'entry': {
-                name: 'fade-in-animation',
+                name: 'todo-grow-height-animation',
                 node: this
               },
               'exit': {
-                name: 'fade-out-animation',
+                name: 'todo-shrink-height-animation',
                 node: this
               }
             }
@@ -147,7 +150,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         // Delegate focus events with useCapture to figure out if one of our
         // child elements is being focused or if we're about to blur
         // All of this fanciness is for the sake of the raised paper effect
-        this.playAnimation('entry', 'entry');
+        this.async(function(){
+          this.playAnimation('entry', 'entry');
+        });
         this.addEventListener('focus', this._activate.bind(this), true);
         this.addEventListener('blur', this._deactivate.bind(this), true);
         this.addEventListener('mouseenter', this._activate.bind(this));
