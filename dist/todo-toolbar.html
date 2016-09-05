@@ -47,13 +47,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <h1>Horizon + RethinkDB + Polymer</h1>
 
-    <iron-icon icon="cloud" hidden$="[[!isOnline]]"></iron-icon>
-    <iron-icon icon="cloud-off" hidden$="[[isOnline]]"></iron-icon>
-    <paper-button on-tap="lock"></paper-button>
-    <!-- <paper-icon-button
+    <iron-icon icon="cloud" hidden$="[[!online]]"></iron-icon>
+    <iron-icon icon="cloud-off" hidden$="[[online]]"></iron-icon>
+    <paper-icon-button
         icon="[[computeLockIcon(signedIn)]]"
         on-tap="lock">
-    </paper-icon-button> -->
+    </paper-icon-button>
   </template>
   <script>
     Polymer({
@@ -64,21 +63,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           notify: true,
           value: false
         },
-        isOnline: {
+        online: {
           type: Boolean,
-          value: false,
-          notify: true
+          value: false
+        },
+        user: {
+          type: Object,
+          value: {},
+          readOnly: true
         }
-      },
-      attached: function () {
-        that = this;
-        horizon.status(function(status){
-          if(status.type == "ready") {
-            that.isOnline = true
-          } else {
-            that.isOnline = false
-          }
-        })
       },
       computeLockIcon: function(signedIn) {
         return signedIn ? 'lock-open' : 'lock';

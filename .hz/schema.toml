@@ -1,3 +1,25 @@
+[collections.tasks]
+indexes = ["user"]
+
 [groups.admin]
 [groups.admin.rules.carte_blanche]
 template = "any()"
+
+[groups.default]
+[groups.default.rules.fetch_public_tasks]
+template = "collection('tasks').findAll({shared: true})"
+
+[groups.authenticated]
+[groups.authenticated.rules.read_current_user]
+template = "collection('users').find({id: userId()})"
+[groups.authenticated.rules.delete_own_tasks]
+template = "collection('tasks').remove(any())"
+validator = "(user, oldVal, newVal) => oldVal.user === user.id"
+[groups.authenticated.rules.fetch_own_tasks]
+template = "collection('tasks').findAll({user: userId()})"
+[groups.authenticated.rules.store_task]
+template = "collection('tasks').store({user: userId(), time: any(), shared: any(true, false), label: any(), isComplete: any(true, false)})"
+[groups.authenticated.rules.update_own_tasks]
+template = "collection('tasks').replace(any())"
+validator = "(user, oldVal, newVal) => oldVal.user === newVal.user"
+

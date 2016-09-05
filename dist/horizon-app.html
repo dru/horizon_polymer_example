@@ -1,0 +1,61 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<script src="/horizon/horizon.js"></script>
+
+<dom-module id="horizon-app">
+
+  <template>
+    <content id="objects" selector="*"></content>
+  </template>
+  
+  <script>
+  
+    Polymer({
+      is: 'horizon-app',
+      
+      properties: {
+        name: {
+          type: String
+        },
+        online: {
+          type: Boolean,
+          value: true,
+          notify: true
+        },
+        app: {
+          type: Object,
+          value: {},
+          notify: true
+        }
+      },
+      
+      ready: function() {
+
+        var that = this
+
+        this.app = Horizon();
+
+        this.app.connect();
+
+        var objs = Polymer.dom(this.$.objects).getDistributedNodes();
+
+        for (i in objs) {
+          objs[i].app = this.app
+        }
+
+        this.app.status(function(status){
+          if(status.type == "ready") {
+            console.log("online")
+            that.online = true
+            history.replaceState( {} , '', '/' );
+          } else if (status.type == "disconnected" || status.type == "error" ) {
+            console.log("offline")
+            that.online = false
+          }
+        })
+
+
+      }      
+
+    });
+  </script>
+</dom-module>

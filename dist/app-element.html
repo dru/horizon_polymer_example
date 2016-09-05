@@ -6,19 +6,32 @@
 <link rel="import" href="/bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="/bower_components/paper-card/paper-card.html">
 
+<link rel="import" href="horizon-app.html">
+<link rel="import" href="horizon-auth.html">
 <link rel="import" href="horizon-collection.html">
+
 <link rel="import" href="todo-item.html">
-<link rel="import" href="shared-styles.html">
 <link rel="import" href="todo-toolbar.html">
+<link rel="import" href="todo-login.html">
+<link rel="import" href="shared-styles.html">
 
 <dom-module id="app-element">
   <template>
     <style include="shared-styles"></style>
 
-    <todo-toolbar></todo-toolbar>
+    <horizon-app online="{{online}}">
+      <horizon-auth id="auth" provider="google" signed-in="{{signedIn}}" user="{{user}}"></horizon-auth>
+      <horizon-collection id="tasks" name="tasks" data="{{list}}" scope="[[scope(user)]]"></horizon-collection>
+    </horizon-app>
 
-    <horizon-collection id="tasks" name="tasks" data="{{list}}"></horizon-collection>
-
+    <todo-login
+        on-sign-in="signIn"
+        signed-in="[[signedIn]]"
+        disabled="[[!online]]">
+    </todo-login>
+    
+    <todo-toolbar signed-in="[[signedIn]]" online="[[online]]" on-sign-out="signOut">></todo-toolbar>
+    
     <paper-card>
       <template is="dom-repeat" items="{{list}}">
         <todo-item todo="[[item]]" on-delete-todo="deleteAction" on-update-todo="updateAction"></todo-item>
@@ -32,21 +45,48 @@
   <script>
     Polymer({
       is: 'app-element',
+      properties:{
+        user: {
+          type: Object,
+          value: {}
+        }
+      },
       addAction: function (e) {
         if (e.keyCode === 13) {
-          this.$.tasks.insert({label: this.$['new-entry'].value, isComplete: false});
+          
+          this.$.tasks.insert({
+            user: this.user.id, 
+            time: "", 
+            shared: false,
+            label: this.$['new-entry'].value, 
+            isComplete: false
+          });
+          
           this.$['new-entry'].value = '';
         }
+      },
+      scope: function(user) {
+        console.log(user)
+        return { user: this.user ? this.user.id : null }
       },
       clearAction: function () {
         this.$.tasks.removeAll()
       },
       deleteAction: function (e) {
-        this.$.tasks.remove(e.detail.todo.id);
+        this.$.tasks.remove(e.detail.todo);
       },
       updateAction: function (e) {
-        this.$.tasks.update(e.detail.todo);
-      }
+        this.$.tasks.replace(e.detail.todo);
+      },
+      
+      signIn: function() {
+        this.$.auth.signInWithPopup()
+      },
+      
+      signOut: function() {
+        this.$.auth.signOut()
+      },
+      
     });
   </script>
 </dom-module>

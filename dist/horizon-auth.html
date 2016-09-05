@@ -1,0 +1,64 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<script src="/horizon/horizon.js"></script>
+
+<dom-module id="horizon-auth">
+
+  <script>
+  
+    Polymer({
+      is: 'horizon-auth',
+      
+      properties: {
+        
+        app: {
+          type: Object,
+          value: {}
+        },
+        
+        provider: {
+          type: String,
+          value: "google",
+          readOnly: true
+        },
+        
+        user: {
+          type: Object,
+          value: {},
+          notify: true
+        },
+        
+        signedIn: {
+          type: Boolean,
+          value: false,
+          notify: true
+        }
+      },
+      
+      ready: function() {
+        var that = this
+        
+        if (!this.app.hasAuthToken()) {
+          this.signedIn = false
+        } else {
+          this.signedIn = true
+          this.app.currentUser().fetch().subscribe(function(user){
+            that.user = user
+          })
+        }
+      },
+      
+      signInWithPopup: function() {
+        this.app.authEndpoint(this.provider).subscribe(function(endpoint){
+          window.location.replace(endpoint);
+        });
+      },
+      
+      signOut: function() {
+        this.signedIn = false
+        this.user = {}
+        Horizon.clearAuthTokens()
+      }
+
+    });
+  </script>
+</dom-module>

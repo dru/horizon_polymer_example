@@ -9,20 +9,33 @@
       is: 'horizon-collection',
       
       properties: {
+        app: {
+          type: Object,
+          value: {}
+        },
+          
         name: {
           type: String
         },
+        
         data: {
           type: Array,
           value: [],
           notify: true
         },
+        
+        scope: {
+          type: Object,
+          value: {},
+          observer: '_scopeChanged',
+          notify: true
+        }
       },
       
-      ready: function() {
+      _scopeChanged: function() {
         var that = this
-        
-        horizon(this.name).watch({rawChanges: true}).subscribe({
+        console.log(`User - ${this.scope.user}`)
+        this.app(this.name).findAll(this.scope).watch({rawChanges: true}).subscribe({
             next: function(change) { 
                 switch(change.type) {
                 case "initial":
@@ -42,27 +55,28 @@
                     }
                 }
             },
-            error: function(err) { console.error(`Error: ${err}`) }
+            error: function(err) { console.error(`Error: 1 ${err}`) }
         });
 
       },
       
       insert: function(data) {
-        horizon(this.name).store(data).subscribe();
+        this.app(this.name).store(data).subscribe();
       },
       
-      remove: function(id) {
-        horizon(this.name).remove(id);
+      remove: function(data) {
+        console.log(data)
+        this.app(this.name).remove(data);
       },
       
-      update: function(data) {
-        horizon(this.name).update(data);
+      replace: function(data) {
+        this.app(this.name).replace(data);
       },
       
       removeAll: function() {
         var that = this
-        horizon(this.name).fetch()
-        .mergeMap(function(messageList){ horizon(that.name).removeAll(messageList)})
+        this.app(this.name).fetch()
+        .mergeMap(function(messageList){ this.app(that.name).removeAll(messageList)})
         .subscribe({
             next: function(id)   { console.log(`id ${id} was removed`) },
             error: function(err) { console.error(`Error: ${err}`) },
