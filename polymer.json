@@ -1,0 +1,10 @@
+{
+  "entrypoint": "dist/index.html",
+  "shell": "dist/app-element.html",
+  "sourceGlobs": [
+   "bower.json"
+  ],
+  "includeDependencies": [
+    "dist/bower_components/webcomponentsjs/webcomponents-lite.min.js"
+  ]
+}
