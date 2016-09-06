@@ -1,4 +1,4 @@
-<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/polymer/polymer.html">
 
 <dom-module id="horizon-collection">
   <script>
@@ -34,7 +34,6 @@
       
       _scopeChanged: function() {
         var that = this
-        console.log(`User - ${this.scope.user}`)
         this.app(this.name).findAll(this.scope).watch({rawChanges: true}).subscribe({
             next: function(change) { 
                 switch(change.type) {
@@ -51,11 +50,11 @@
                 case "change":
                     var index = that.data.findIndex(function(a){ return a.id == change.old_val.id});
                     if (index != -1) {
-                        that.set(`data.${index}`, change.new_val)
+                        that.set('data.' + index, change.new_val)
                     }
                 }
             },
-            error: function(err) { console.error(`Error: 1 ${err}`) }
+            error: function(err) { console.error(err) }
         });
 
       },
@@ -65,7 +64,6 @@
       },
       
       remove: function(data) {
-        console.log(data)
         this.app(this.name).remove(data);
       },
       
@@ -77,11 +75,7 @@
         var that = this
         this.app(this.name).fetch()
         .mergeMap(function(messageList){ this.app(that.name).removeAll(messageList)})
-        .subscribe({
-            next: function(id)   { console.log(`id ${id} was removed`) },
-            error: function(err) { console.error(`Error: ${err}`) },
-            complete: function() { console.log('All items removed successfully') }
-        });
+        .subscribe();
       }
       
 

@@ -1,5 +1,4 @@
-<link rel="import" href="/bower_components/polymer/polymer.html">
-<script src="/horizon/horizon.js"></script>
+<link rel="import" href="bower_components/polymer/polymer.html">
 
 <dom-module id="horizon-app">
 
@@ -44,11 +43,9 @@
 
         this.app.status(function(status){
           if(status.type == "ready") {
-            console.log("online")
             that.online = true
             history.replaceState( {} , '', '/' );
           } else if (status.type == "disconnected" || status.type == "error" ) {
-            console.log("offline")
             that.online = false
           }
         })
